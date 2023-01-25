@@ -114,7 +114,6 @@ public class Cognito : MonoBehaviour
             // User is logged in
             loginSuccessful = true;
 
-
         }
         catch (Exception e)
         {
