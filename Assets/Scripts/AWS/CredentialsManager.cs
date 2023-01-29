@@ -12,9 +12,9 @@ public class CredentialsManager
     public static RegionEndpoint region = RegionEndpoint.USEast1; //change this if you are in a different region
 
     // Cognito Credentials Variables
-    public const string identityPool = "us-east-1:8548e239-9b43-4b9c-a596-f2ed5cfe6e1a";
-    public static string userPoolId = "us-east-1_HDVt6k38S"; 
-    public static string appClientId = "hcon738u70hmgd92eeminc4mt";
+    public const string identityPool = "us-east-1:4011e768-3981-4d25-8923-1a71fb845818";
+    public static string userPoolId = "us-east-1_9BC3bZAxJ";
+    public static string appClientId = "12qdu1o1f2k1f8u584o2nldppv";
 
     // Initialize the Amazon Cognito credentials provider
     public static CognitoAWSCredentials credentials = new CognitoAWSCredentials(

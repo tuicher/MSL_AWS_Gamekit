@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Amazon.CognitoIdentityProvider;
 using Amazon.CognitoIdentityProvider.Model;
 using Amazon.Extensions.CognitoAuthentication;
+using Amazon.CognitoIdentity;
+using Amazon;
 
 public class Cognito : MonoBehaviour
 {
@@ -21,10 +23,10 @@ public class Cognito : MonoBehaviour
     // Token Holder
     public static string jwt;
 
-    bool loginSuccessful;
+    static bool loginSuccessful;
 
     // Create an Identity Provider
-    AmazonCognitoIdentityProviderClient provider = new AmazonCognitoIdentityProviderClient
+    static AmazonCognitoIdentityProviderClient provider = new AmazonCognitoIdentityProviderClient
         ( new Amazon.Runtime.AnonymousAWSCredentials(), CredentialsManager.region );
 
     // Start is called before the first frame update
@@ -43,6 +45,12 @@ public class Cognito : MonoBehaviour
         // Load Panels
         MenuManager.Instance.Close_Login_Panel();
         MenuManager.Instance.Load_Recommendations_Panel();
+
+    }
+
+    public static void Login(string user, string pass)
+    {
+        _ = Login_User(user, pass);
 
     }
 
@@ -94,6 +102,7 @@ public class Cognito : MonoBehaviour
         string passWord = LoginPasswordField.text;
 
         CognitoUserPool userPool = new CognitoUserPool(CredentialsManager.userPoolId, CredentialsManager.appClientId, provider);
+
         CognitoUser user = new CognitoUser(userName, CredentialsManager.appClientId, userPool, provider);
 
         InitiateSrpAuthRequest authRequest = new InitiateSrpAuthRequest()
@@ -135,8 +144,55 @@ public class Cognito : MonoBehaviour
         }
     }
 
+    private static async Task Login_User( string username, string pass)
+    {
+
+        CognitoUserPool userPool = new CognitoUserPool(CredentialsManager.userPoolId, CredentialsManager.appClientId, provider);
+
+        CognitoUser user = new CognitoUser(username, CredentialsManager.appClientId, userPool, provider);
+
+        InitiateSrpAuthRequest authRequest = new InitiateSrpAuthRequest()
+        {
+            Password = pass
+        };
+
+        try
+        {
+            AuthFlowResponse authResponse = await user.StartWithSrpAuthAsync(authRequest).ConfigureAwait(false);
+
+            GetUserRequest getUserRequest = new GetUserRequest();
+            getUserRequest.AccessToken = authResponse.AuthenticationResult.AccessToken;
+
+            Debug.Log("User Access Token: " + getUserRequest.AccessToken);
+            jwt = getUserRequest.AccessToken;
+
+            // User is logged in
+            loginSuccessful = true;
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Exception: " + e);
+            return;
+        }
+
+        if (loginSuccessful == true)
+        {
+
+            string subId = await Get_User_Id();
+            CredentialsManager.userid = subId;
+
+            // Send Login Event
+            Events.Call_Login();
+
+            // Print UserID
+            Debug.Log("Response - User's Sub ID from Cognito: " + CredentialsManager.userid);
+
+        }
+    }
+
     // Gets a User's sub UUID from Cognito
-    private async Task<string> Get_User_Id()
+    private static async Task<string> Get_User_Id()
     {
         Debug.Log("Getting user's id...");
 
