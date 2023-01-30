@@ -2,23 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class LoginMenuManager : MonoBehaviour
 {
-    // MenuManager singleton
+    // LoginMenuManager singleton
     public static LoginMenuManager Instance = null;
 
     // Panels to apply in editor
     [SerializeField] private GameObject LoginPanel;
-    //[SerializeField] private GameObject SignupPanel;
 
     // UI Buttons & Input Fields
-    //public GameObject BankButtonGameObject;
-    public Button LoginButton;
-    public Toggle StayLoggedToggle;
+    [SerializeField] Button LoginButton;
+    [SerializeField] Toggle StayLoggedToggle;
+    [SerializeField] TMP_InputField UsernameTextField;
+    [SerializeField] TMP_InputField PasswordTextField;
 
-    public TMPro.TMP_InputField UsernameTextField;
-    public TMPro.TMP_InputField PasswordTextField;
+    GameObject IndicatorName;
+    GameObject IndicatorPass;
+    TextMeshProUGUI FeedbackMessage;
 
     private void Awake()
     {
@@ -28,11 +30,23 @@ public class LoginMenuManager : MonoBehaviour
             Instance = this.gameObject.GetComponent<LoginMenuManager>();
     }
 
-    // Start is called before the first frame update
     void Start()
     {
-        //Events.Call_App_Load();
+        // Finding all components
+        LoginButton = GameObject.Find("Login Button").GetComponent<Button>();
+        StayLoggedToggle = GameObject.Find("Stay logged Toggle").GetComponent<Toggle>();
+        UsernameTextField = GameObject.Find("User InputField").GetComponent<TMP_InputField>();
+        PasswordTextField = GameObject.Find("Password InputField").GetComponent<TMP_InputField>();
+        IndicatorName = GameObject.Find("Red Indicator User");
+        IndicatorPass = GameObject.Find("Red Indicator Pass");
+        FeedbackMessage = GameObject.Find("Feedback Message").GetComponent<TextMeshProUGUI>();
 
+        // Disabling elements
+        IndicatorName.SetActive(false);
+        IndicatorPass.SetActive(false);
+        FeedbackMessage.gameObject.SetActive(false);
+
+        // Setting Listeners
         LoginButton.onClick.AddListener(Login_AWS_Procedure);
     }
 
@@ -47,8 +61,30 @@ public class LoginMenuManager : MonoBehaviour
         LoginPanel.SetActive(true);
     }
 
+    public void SetIndicators(bool state, string message = "")
+    {
+        IndicatorName.SetActive(state);
+        IndicatorPass.SetActive(state);
+
+        FeedbackMessage.text = message;
+        FeedbackMessage.gameObject.SetActive(state);
+    }
+
+
     public void Login_AWS_Procedure()
     {
-        Cognito.Login(UsernameTextField.text, PasswordTextField.text);
+        // Check if epmty or null Input Field
+        var user = UsernameTextField.text;
+        var password = PasswordTextField.text;
+
+
+        if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password))
+        {
+            SetIndicators(true, "Introduce your user and password");
+        } else
+        {
+            Cognito.Login(user, password);
+        }
+
     }
 }

@@ -170,9 +170,22 @@ public class Cognito : MonoBehaviour
             loginSuccessful = true;
 
         }
+        catch (NotAuthorizedException invalidPass)
+        {
+            Debug.Log("Wrong username or pass: " + invalidPass.ErrorCode);
+            LoginMenuManager.Instance.SetIndicators(true, "Wrong username or pass");
+            return;
+        }
+        catch (UserNotConfirmedException unconfirmed)
+        {
+            Debug.Log("Unconfirmed: " + unconfirmed.ErrorCode);
+            LoginMenuManager.Instance.SetIndicators(true, "Check your email to corfirm your account");
+            return;
+        }
         catch (Exception e)
         {
-            Debug.Log("Exception: " + e);
+            Debug.Log("Error: " + e.GetType());
+
             return;
         }
 
