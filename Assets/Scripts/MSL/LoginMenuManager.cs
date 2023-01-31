@@ -80,7 +80,7 @@ public class LoginMenuManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(password))
         {
-            SetIndicators(true, "Introduce your user and password");
+            Instance.SetIndicators(true, "Introduce your user and password");
         } else
         {
             Cognito.Login(user, password);
