@@ -39,7 +39,7 @@ public class LoginMenuManager : MonoBehaviour
         PasswordTextField = GameObject.Find("Password InputField").GetComponent<TMP_InputField>();
         IndicatorName = GameObject.Find("Red Indicator User");
         IndicatorPass = GameObject.Find("Red Indicator Pass");
-        FeedbackMessage = GameObject.Find("Feedback Message").GetComponent<TextMeshProUGUI>();
+        //FeedbackMessage = GameObject.Find("Feedback Message").GetComponent<TextMeshProUGUI>();
 
         // Disabling elements
         IndicatorName.SetActive(false);
