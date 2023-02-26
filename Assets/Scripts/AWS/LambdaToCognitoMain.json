@@ -1,0 +1,8 @@
+{
+        "Sid": "Cognito",
+        "Effect": "Allow",
+        "Action": [
+            "cognito-idp:ListUsers"
+        ],
+        "Resource": "arn:aws:cognito-idp:us-east-1:713889355583:userpool/us-east-1_9BC3bZAxJ"
+    }
